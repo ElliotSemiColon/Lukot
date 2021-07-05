@@ -1,6 +1,5 @@
 import Resizeable from "./resizable.js";
 
-
 export default class Bucket extends Resizeable{
 
     constructor(_colours){
@@ -17,6 +16,7 @@ export default class Bucket extends Resizeable{
         this.whiteSize = [this.size, 0]; //value, temp smoothed value
 
         this.filling;
+        this.fills;
 
         this.mode = 0; //0 is floodfill mode, 1 is editor mode
         this.held = false;
@@ -30,7 +30,9 @@ export default class Bucket extends Resizeable{
         
         // ctx.fillStyle = "#000000";
         // ctx.fillRect(this.x - 25, this.y - 25, 50, 50);
-        ctx.fillStyle = "#ffffff";
+        if(this.mode == 0){ ctx.fillStyle = "#ffffff"; }
+        if(this.mode == 1){ ctx.fillStyle = "#000000"; }
+        //if(this.fills == 0){ ctx.fillStyle = "#dddddd"; }
 
         ctx.fillRect(this.x - this.size, this.y - this.size, this.whiteSize[1], this.whiteSize[1]);
 
@@ -43,12 +45,16 @@ export default class Bucket extends Resizeable{
         ctx.arc(this.x + this.whiteSize[1] - this.size, this.y + this.whiteSize[1] - this.size, this.centreSize[1], 0, 2 * Math.PI);
         ctx.fill();
 
-    }
+        ctx.font = `${this.whiteSize[1]}px Arial`;
+        ctx.fillStyle = "#000000";
+        if(this.mode == 0){ ctx.fillText(`${this.fills}`, this.x + this.whiteSize[1] - this.size * 1.28, this.y + this.whiteSize[1] * 1.32 - this.size); } 
 
+    }
+    
     update(){
 
         if(this.filling){ this.centreSize[0] = 0 }
-        else{ this.centreSize[0] = this.size/1.55; }
+        else if(this.fills > 0){ this.centreSize[0] = this.size/1.55; }
 
         this.whiteSize[1] += (this.whiteSize[0] - this.whiteSize[1])/5;
         this.centreSize[1] += (this.centreSize[0] - this.centreSize[1])/5;

@@ -1,6 +1,4 @@
-import Tile from "./tile.js";
 import Board from "./board.js";
-import Bucket from "./bucket.js";
 
 var canvas = document.getElementById("canvas"); 
 var ctx = canvas.getContext("2d"); 
@@ -10,11 +8,27 @@ window.addEventListener('resize', resizeCanvas, false);
 
 window.addEventListener('keydown', event => {
     switch(event.keyCode){
-        case 39:
+        case 39: //right
             board.bucket.increment(1);
             return;
-        case 37:
+        case 37: //left
             board.bucket.increment(-1);
+            return;
+        case 38: //up
+            board.bucket.mode = 1;
+            board.bucket.fills = board.storage.fills[board.level];
+            return;
+        case 40: //down
+            board.bucket.mode = 0;
+            return;
+        case 79: // 'o' key (output board)
+            board.get();
+            return;
+        case 80: // 'p' key
+            board.skip(1);
+            return;
+        case 73: // 'i' key
+            board.skip(-1);
             return;
         default:
             return;
@@ -27,12 +41,14 @@ document.onmouseup = release;
 //document.onwheel = increment;
 //document.onmouseup = release;
 
-let size = 3, colours = 5;
+let size = 19, colours = 5, mx = 0, my = 0;
 
 let board = new Board(size, colours);
 
 function move(event)
 {
+    mx = event.clientX;
+    my = event.clientY;
     board.bucket.x = event.clientX + board.bucket.size;
     board.bucket.y = event.clientY + board.bucket.size;
 }
@@ -58,6 +74,8 @@ function release(event){
 resizeCanvas();
 
 board.generate();
+board.set(board.storage.levels[0]);
+board.bucket.fills = board.storage.fills[0];
 
 //tile generation
 //let tiles = [], sideTiles = 10;
@@ -97,7 +115,7 @@ function mainLoop(timestamp){
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
     board.bucket.update();
-    board.fillcheck();
+    board.update(mx, my);
     //if(board){board.update();}
 
     //board.tiles.forEach(tile => { tile.draw(ctx); });
