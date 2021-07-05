@@ -52,8 +52,7 @@ export default class Board extends Resizeable{
 
         this.fillCheck();
         this.heldCheck(mx, my);
-        if(this.filling != this.lastFilling){ setTimeout(() => { this.progressionCheck(); }, 100); }
-        this.lastFilling = this.filling;
+        if(!this.filling){this.progressionCheck();}
 
     }
 
@@ -104,7 +103,6 @@ export default class Board extends Resizeable{
 
     progressionCheck(){
 
-        console.log("is the screen filled?");
         if(this.isComplete() && this.level + 1 < this.storage.levels.length && this.bucket.mode == 0){ this.progress(1); }
 
     }
