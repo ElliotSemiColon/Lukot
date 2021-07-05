@@ -52,7 +52,7 @@ export default class Board extends Resizeable{
 
         this.fillCheck();
         this.heldCheck(mx, my);
-        if(this.filling != this.lastFilling){ setTimeout(() => { this.progressionCheck(); }, 1000); }
+        if(this.filling != this.lastFilling){ setTimeout(() => { this.progressionCheck(); }, 100); }
         this.lastFilling = this.filling;
 
     }
@@ -76,7 +76,7 @@ export default class Board extends Resizeable{
         this.bucket.filling = this.filling;
 
         this.changedTiles[2] += ((this.changedTiles[1] - this.changedTiles[0]) - this.changedTiles[2])/10; //smoothing function
-        if(this.changedTiles[2] < 1){this.filling = false;}
+        if(this.changedTiles[2] < 0.75){this.filling = false;}
         this.changedTiles[0] = this.changedTiles[1];
 
     }
