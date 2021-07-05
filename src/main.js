@@ -38,7 +38,7 @@ window.addEventListener('keydown', event => {
 document.onmousemove = move;
 document.onmousedown = click;
 document.onmouseup = release;
-//document.onwheel = increment;
+document.onwheel = increment;
 //document.onmouseup = release;
 
 let size = 19, colours = 5, mx = 0, my = 0;
@@ -53,7 +53,7 @@ function move(event)
     board.bucket.y = event.clientY + board.bucket.size;
 }
 
-function increment(event){ board.bucket.increment(); }
+function increment(event){ board.bucket.increment(event.deltaY/Math.abs(event.deltaY)); }
 
 function click(event){
 
