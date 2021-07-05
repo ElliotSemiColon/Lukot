@@ -10,7 +10,6 @@ export default class Board extends Resizeable{
         super();
         this.size = _size;
 
-        this.tempTiles = [];
         this.tiles = [];
 
         //this.fillOrigin = null;
@@ -28,7 +27,7 @@ export default class Board extends Resizeable{
         this.HUD = new HUD();
     }
 
-    generate(){
+    generate(){ //generate the board
         this.tiles = [];
 
         let sideLength = this.cHeight < this.cWidth ? this.cHeight : this.cWidth;
@@ -48,17 +47,22 @@ export default class Board extends Resizeable{
             x = sx;
         }
 
-        this.tempTiles = this.tiles;
-        this.set(this.storage.levels[this.level]);
-        this.bucket.fills = this.storage.fills[this.level];
+        //console.log(this.storage.savedTo[this.level]);
+        if(this.storage.savedTo[this.level]){
+            this.set(this.storage.saves[this.level]);
+            this.bucket.fills = this.storage.fillsLeft[this.level];
+        }else{
+            this.set(this.storage.levels[this.level]);
+            this.bucket.fills = this.storage.fills[this.level];
+        }
 
         this.HUD.topx = sx;
         this.HUD.topy = sy;
     }
 
-    draw(ctx){ this.tiles.forEach(tile => { tile.draw(ctx); }); }
+    draw(ctx){ this.tiles.forEach(tile => { tile.draw(ctx); }); } //draw the board
 
-    update(mx, my, fps){
+    update(mx, my, fps){ //update the board
 
         this.fillCheck(fps);
         this.heldCheck(mx, my);
@@ -66,13 +70,37 @@ export default class Board extends Resizeable{
 
     }
 
-    getClicked(mx, my){
+    reset(){
+
+        //console.log(this.level);
+        this.storage.reset(this.level);
+        this.generate();
+
+    }
+
+    load(level){ //loads level depending on if it has a saved version or not
+
+        if(this.storage.savedTo[level]){
+            this.set(this.storage.saves[level]);
+            this.bucket.fills = this.storage.fillsLeft[level];
+        }else{
+            this.set(this.storage.levels[level]);
+            this.bucket.fills = this.storage.fills[level];
+        }
+
+    }
+
+    getClicked(mx, my){ //return the index of the tile being clicked on
         let index = -1;
         for(let i = 0; i < this.tiles.length; i++){ if(this.tiles[i].click(mx, my)){ index = i; } }
         return index;
     }
 
-    startFill(){
+    eyedropper(mx, my){ //pick up colour below cursor
+        this.bucket.ID = this.tiles[this.getClicked(mx, my)].ID;
+    }
+
+    startFill(){ //pre-requisite for filling the screen
 
         this.filling = true;
         this.changedTiles[2] = 2;
@@ -80,7 +108,7 @@ export default class Board extends Resizeable{
 
     }
 
-    fillCheck(fps){
+    fillCheck(fps){ //is the screen being filled??
         
         this.bucket.filling = this.filling;
 
@@ -90,7 +118,7 @@ export default class Board extends Resizeable{
 
     }
 
-    heldCheck(mx, my){ 
+    heldCheck(mx, my){ //is mouse held in editor mode?
         
         if(this.bucket.held && this.bucket.mode == 1){
             let index = this.getClicked(mx, my);
@@ -99,7 +127,7 @@ export default class Board extends Resizeable{
 
     }
 
-    isComplete(){
+    isComplete(){ //is the level complete??
 
         let ID = this.tiles[0].ID;
 
@@ -111,24 +139,30 @@ export default class Board extends Resizeable{
 
     }
 
-    progressionCheck(){
+    progressionCheck(){ //can i progress??
 
-        if(this.isComplete() && this.level + 1 < this.storage.levels.length && this.bucket.mode == 0){ this.progress(1); }
+        if(this.isComplete() && this.level + 1 < this.storage.levels.length && this.bucket.mode == 0){ 
+            this.storage.completed(this.level);
+            this.generate();
+            setTimeout(() => { this.progress(1, true); }, 1000); 
+        }
 
     }
 
-    progress(direction){
+    progress(direction, bonus){ // move the player along to the next/last level
         this.level += direction;
-        this.set(this.storage.levels[this.level]);
-        this.HUD.score += this.bucket.fills;
-        this.bucket.fills = this.storage.fills[this.level];
+        this.HUD.level = this.level;
+        
+        if(bonus){ this.HUD.score += this.bucket.fills; }
+
+        this.load(this.level);
     }
 
     skip(direction){ //for editor mode
-        if(this.bucket.mode == 1 && this.level + direction < this.storage.levels.length && this.level + direction >= 0){ this.progress(direction); }
+        if(/*this.bucket.mode == 1 && */this.level + direction < this.storage.levels.length && this.level + direction >= 0){ this.progress(direction, false); }
     }
 
-    click(mx, my){
+    click(mx, my){ // interact with tile in fill mode
 
         let index = -1, ID, bID;
 
@@ -196,7 +230,7 @@ export default class Board extends Resizeable{
         }
     }
 
-    get(){ //outputs board state with RLE
+    get(){ //outputs board state with RLE for level creation in editor mode
 
         let IDs = [], initial = this.tiles[0].ID, tally = 0;
 
@@ -220,6 +254,8 @@ export default class Board extends Resizeable{
     }
 
     set(input){ //reads encoded list and sets state of board
+
+        //console.log(`board being set to ${input}`);
 
         let cursor = 0, ID, count;
         let rgxBlock = /([0-9]+)x([0-9]+)/, match;

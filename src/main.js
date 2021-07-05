@@ -1,4 +1,5 @@
 import Board from "./board.js";
+import HUD from "./hud.js";
 
 var canvas = document.getElementById("canvas"); 
 var ctx = canvas.getContext("2d"); 
@@ -24,14 +25,17 @@ window.addEventListener('keydown', event => {
         case 79: // 'o' key (output board)
             board.get();
             return;
-        case 80: // 'p' key
+        case 89: // 'p' key
             board.skip(1);
             return;
-        case 73: // 'i' key
+        case 84: // 'i' key
             board.skip(-1);
             return;
         case 82: //'r' key (reset)
-            if(!board.filling){ board.generate(); }
+            if(!(board.filling || showControls)){ board.reset(); }
+            return;
+        case 32:
+            showControls = false;
             return;
         default:
             return;
@@ -41,10 +45,9 @@ window.addEventListener('keydown', event => {
 document.onmousemove = move;
 document.onmousedown = click;
 document.onmouseup = release;
-document.onwheel = increment;
 //document.onmouseup = release;
 
-let size = 19, colours = 5, mx = 0, my = 0;
+let size = 19, colours = 6, mx = 0, my = 0;
 
 let board = new Board(size, colours);
 
@@ -56,21 +59,22 @@ function move(event)
     board.bucket.y = event.clientY + board.bucket.size;
 }
 
-function increment(event){ board.bucket.increment(event.deltaY/Math.abs(event.deltaY)); }
-
 function click(event){
 
-    // board.tiles.forEach(tile => { tile.clickCheck(event.clientX, event.clientY); });
-    board.click(event.clientX, event.clientY);
-    board.bucket.click();
-    frameID = 0;
-    board.bucket.held = true;
+    if(!showControls && event.button == 0){
+        // board.tiles.forEach(tile => { tile.clickCheck(event.clientX, event.clientY); });
+        board.click(event.clientX, event.clientY);
+        board.bucket.click();
+        frameID = 0;
+        board.bucket.held = true;
+    }
 
+    if(event.button == 1){ board.eyedropper(event.clientX, event.clientY); }
 }
 
-function release(event){
+function release(event){ //for editor
 
-    board.bucket.held = false;
+    if(!showControls){ board.bucket.held = false; }
 
 }
 
@@ -87,15 +91,7 @@ function resizeCanvas(){
 
 board.generate();
 
-let frameID = 0, lastTime = 0, fps = 0;
-
-function mainLoop(timestamp){
-
-    fps = 1000/(timestamp - lastTime);
-    lastTime = timestamp;
-
-    ctx.fillStyle = "#666666";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+function game(){
 
     board.bucket.update();
     board.update(mx, my, fps);
@@ -105,6 +101,36 @@ function mainLoop(timestamp){
     board.draw(ctx);
     board.HUD.draw(ctx);
     board.bucket.draw(ctx);
+
+}
+
+function controls(){
+
+    let size = 50;
+    ctx.font = `${size}px Helvetica`;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("Welcome to Lukot; clear the patterns to clear levels!", canvas.width/2 - size * 12.1, canvas.height/2 - size * 4.5);
+    ctx.fillStyle = "#222222";
+    ctx.fillText("Change levels: T/Y", canvas.width/2 - size * 12.1, canvas.height/2 - size * 3);
+    ctx.fillText("Select fill colour: middle-mouse over desired colour", canvas.width/2 - size * 12.1, canvas.height/2 - size * 1.5);
+    ctx.fillText("Fill an area: left click/right click", canvas.width/2 - size * 12.1, canvas.height/2);
+    ctx.fillText("Retry level: R (tip: you can use R to reset complete levels)", canvas.width/2 - size * 12.1, canvas.height/2 + size * 1.5);
+    ctx.fillText("Start game: spacebar", canvas.width/2 - size * 12.1, canvas.height/2 + size * 3);
+
+}
+
+let frameID = 0, lastTime = 0, fps = 0, showControls = true;
+
+function mainLoop(timestamp){
+
+    fps = 1000/(timestamp - lastTime);
+    lastTime = timestamp;
+
+    ctx.fillStyle = "#666666";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    if(showControls){ controls(); }
+    else{ game(); }
 
     frameID++;
 

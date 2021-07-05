@@ -2,7 +2,7 @@ export default class Levels{
 
     constructor(){
 
-        this.levels = [
+        this.levels = [ //RLE level data
             ["0x83", "1x5", "0x13", "1x7", "0x11", "1x9", "0x9", "1x11", "0x8", "1x11", "0x8", "1x11", "0x8", "1x11", "0x8", "1x11", "0x9", "1x9", "0x11", "1x7", "0x13", "1x5", "0x83"],
             ["0x83", "1x5", "0x13", "1x6", "2x1", "0x11", "1x6", "2x3", "0x9", "1x6", "2x3", "1x2", "0x8", "1x5", "2x3", "1x3", "0x8", "1x4", "2x3", "1x4", "0x8", "1x3", "2x3", "1x5", "0x8", "1x2", "2x3", "1x6", "0x9", "2x3", "1x6", "0x11", "2x1", "1x6", "0x13", "1x5", "0x83"],
             ["1x14", "0x3", "2x2", "1x13", "0x3", "2x3", "1x12", "0x3", "2x3", "0x1", "1x11", "0x3", "2x3", "0x2", "1x10", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x9", "0x3", "2x3", "0x3", "1x10", "0x2", "2x3", "0x3", "1x11", "0x1", "2x3", "0x3", "1x12", "2x3", "0x3", "1x13", "2x2", "0x3", "1x14"],
@@ -12,10 +12,57 @@ export default class Levels{
             ["0x40", "1x1", "4x3", "0x8", "4x1", "0x6", "1x1", "4x3", "0x8", "4x1", "0x6", "1x1", "4x1", "1x3", "0x7", "4x1", "0x6", "1x1", "4x1", "1x3", "0x7", "4x1", "0x6", "1x1", "4x1", "1x4", "0x6", "4x1", "0x6", "1x1", "4x1", "2x3", "1x1", "0x6", "4x1", "0x6", "1x1", "4x1", "2x3", "1x2", "0x5", "4x1", "0x6", "1x1", "4x1", "2x1", "3x3", "1x1", "0x5", "4x1", "0x6", "1x1", "4x1", "2x1", "3x3", "1x3", "0x3", "4x1", "0x6", "1x1", "4x1", "2x3", "3x1", "2x7", "0x6", "1x1", "4x4", "3x1", "4x2", "1x1", "2x2", "0x1", "4x1", "0x6", "1x5", "3x1", "1x3", "2x2", "0x1", "4x1", "0x11", "3x3", "0x4", "4x1", "0x6", "4x5", "3x3", "4x7", "0x16", "4x1", "0x18", "4x1", "0x23"]
         ];
 
-        this.fills = [1, 2, 2, 2, 3, 3, 4];
+        this.fills = [1, 2, 2, 2, 3, 3, 4]; //number of moves allowed 
+
+        this.saves = [[], [], [], [], [], [], []]; //saves the state of a level
+        this.fillsLeft = [1, 2, 2, 2, 3, 3, 4]; 
+        
+        this.savedTo = [false, false, false, false, false, false, false];
+
+        //tick pattern
+        this.complete = ["0x41", "5x12", "0x6", "5x1", "0x18", "5x1", "0x12", "1x1", "5x1", "0x4", "5x1", "0x11", "1x1", "5x2", "0x4", "5x1", "0x10", "1x1", "5x2", "0x5", "5x1", "0x9", "1x1", "5x2", "0x6", "5x1", "0x8", "1x1", "5x2", "0x2", "5x1", "0x4", "5x1", "0x7", "1x1", "5x2", "0x3", "5x1", "0x4", "5x1", "0x1", "5x1", "1x1", "0x3", "1x1", "5x2", "0x4", "5x1", "0x4", "5x1", "0x1", "5x2", "1x1", "0x1", "1x1", "5x2", "0x5", "5x1", "0x4", "5x1", "0x2", "5x2", "1x1", "5x2", "0x6", "5x1", "0x4", "5x1", "0x3", "5x3", "0x7", "5x1", "0x4", "5x1", "0x4", "5x1", "0x8", "5x1", "0x4", "5x1", "0x13", "5x1", "0x5", "5x13", "0x41"];
 
     }
 
+    save(tiles, level){
 
+        let IDs = [], initial = tiles[0].ID, tally = 0;
 
+        for(let i = 0; i < tiles.length; i++){
+
+            let tileID = tiles[i].ID;
+
+            if(tileID != initial){ 
+                IDs.push(`${initial}x${tally}`);
+                tally = 1;
+                initial = tileID; 
+            }else{
+                tally++;
+            }
+        }
+
+        IDs.push(`${initial}x${tally}`);
+
+        this.saves[level] = IDs;
+        this.savedTo[level] = true;
+
+    }
+
+    completed(level){
+        this.saves[level] = this.complete;
+        this.savedTo[level] = true;
+        this.fillsLeft[level] = 0;
+    }
+
+    reset(level){
+
+        if(this.savedTo[level]){
+
+            this.saves[level] = [];
+            this.fillsLeft[level] = this.fills[level];
+            this.savedTo[level] = false;
+
+        }
+
+    }
 }

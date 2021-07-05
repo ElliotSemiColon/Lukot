@@ -62,9 +62,11 @@ export default class Bucket extends Resizeable{
     }
 
     increment(val){
-        let temp = this.ID;
-        temp += val;
-        this.ID = (temp + this.colours) % this.colours;
+        if(this.mode == 1){
+            let temp = this.ID;
+            temp += val;
+            this.ID = (temp + this.colours) % this.colours;
+        }
     }
 
     click(){
