@@ -1,2 +1,2 @@
-# floodfill-game
-simple webgame for my first itch.io gamejam
+# Floodfill game
+A simple webgame for my first itch.io gamejam.
