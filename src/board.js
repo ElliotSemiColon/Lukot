@@ -104,6 +104,7 @@ export default class Board extends Resizeable{
 
     progressionCheck(){
 
+        console.log("is the screen filled?");
         if(this.isComplete() && this.level + 1 < this.storage.levels.length && this.bucket.mode == 0){ this.progress(1); }
 
     }
