@@ -45,7 +45,7 @@ export default class Bucket extends Resizeable{
         ctx.arc(this.x + this.whiteSize[1] - this.size, this.y + this.whiteSize[1] - this.size, this.centreSize[1], 0, 2 * Math.PI);
         ctx.fill();
 
-        ctx.font = `${this.whiteSize[1]}px Arial`;
+        ctx.font = `${this.whiteSize[1]}px Helvetica`;
         ctx.fillStyle = "#000000";
         if(this.mode == 0){ ctx.fillText(`${this.fills}`, this.x + this.whiteSize[1] - this.size * 1.28, this.y + this.whiteSize[1] * 1.32 - this.size); } 
 

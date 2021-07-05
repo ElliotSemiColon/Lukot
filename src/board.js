@@ -2,6 +2,7 @@ import Tile from "./tile.js";
 import Resizeable from "./resizable.js";
 import Bucket from "./bucket.js";
 import Levels from "./levels.js";
+import HUD from "./hud.js";
 
 export default class Board extends Resizeable{
 
@@ -23,9 +24,13 @@ export default class Board extends Resizeable{
         this.filling = false;
         this.lastFilling = false;
         this.changedTiles = [0, 0, 0];
+
+        this.HUD = new HUD();
     }
 
     generate(){
+        this.tiles = [];
+
         let sideLength = this.cHeight < this.cWidth ? this.cHeight : this.cWidth;
         let difference = Math.abs(this.cHeight - this.cWidth);
         let sx = this.cHeight < this.cWidth ? difference / 2 : 0;
@@ -44,6 +49,11 @@ export default class Board extends Resizeable{
         }
 
         this.tempTiles = this.tiles;
+        this.set(this.storage.levels[this.level]);
+        this.bucket.fills = this.storage.fills[this.level];
+
+        this.HUD.topx = sx;
+        this.HUD.topy = sy;
     }
 
     draw(ctx){ this.tiles.forEach(tile => { tile.draw(ctx); }); }
@@ -110,6 +120,7 @@ export default class Board extends Resizeable{
     progress(direction){
         this.level += direction;
         this.set(this.storage.levels[this.level]);
+        this.HUD.score += this.bucket.fills;
         this.bucket.fills = this.storage.fills[this.level];
     }
 

@@ -30,6 +30,9 @@ window.addEventListener('keydown', event => {
         case 73: // 'i' key
             board.skip(-1);
             return;
+        case 82: //'r' key (reset)
+            if(!board.filling){ board.generate(); }
+            return;
         default:
             return;
     }
@@ -73,32 +76,7 @@ function release(event){
 
 resizeCanvas();
 
-board.generate();
-board.set(board.storage.levels[0]);
 board.bucket.fills = board.storage.fills[0];
-
-//tile generation
-//let tiles = [], sideTiles = 10;
-
-//resizeCanvas();
-
-// let sideLength = canvas.height < canvas.width ? canvas.height : canvas.width;
-// let difference = Math.abs(canvas.height - canvas.width)
-// let sx = canvas.height < canvas.width ? difference / 2 : 0;
-// let sy =  canvas.height > canvas.width ? difference / 2 : 0;
-// let x = sx, y = sy, size = sideLength / sideTiles, colours = 3;
-
-// //console.log(height);
-
-// for(let i = 0; i < sideTiles; i++){
-//     for(let j = 0; j < sideTiles; j++){
-//         tiles.push(new Tile(Math.floor(Math.random() * colours), x + size/2, y + size/2, size));
-//         x += size;
-//     }
-//     y += size;
-//     x = sx;
-// }
-
 
 function resizeCanvas(){
     canvas.width = window.innerWidth;
@@ -106,6 +84,8 @@ function resizeCanvas(){
     board.resize(canvas.width, canvas.height);
     board.tiles.forEach(tile =>{ tile.resize(canvas.width, canvas.height); });
 }
+
+board.generate();
 
 let frameID = 0, lastTime = 0, fps = 0;
 
@@ -123,8 +103,9 @@ function mainLoop(timestamp){
 
     //board.tiles.forEach(tile => { tile.draw(ctx); });
     board.draw(ctx);
+    board.HUD.draw(ctx);
     board.bucket.draw(ctx);
-    
+
     frameID++;
 
     requestAnimationFrame(mainLoop);
