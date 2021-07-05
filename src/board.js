@@ -48,9 +48,9 @@ export default class Board extends Resizeable{
 
     draw(ctx){ this.tiles.forEach(tile => { tile.draw(ctx); }); }
 
-    update(mx, my){
+    update(mx, my, fps){
 
-        this.fillCheck();
+        this.fillCheck(fps);
         this.heldCheck(mx, my);
         if(!this.filling){this.progressionCheck();}
 
@@ -70,11 +70,11 @@ export default class Board extends Resizeable{
 
     }
 
-    fillCheck(){
+    fillCheck(fps){
         
         this.bucket.filling = this.filling;
 
-        this.changedTiles[2] += ((this.changedTiles[1] - this.changedTiles[0]) - this.changedTiles[2])/10; //smoothing function
+        this.changedTiles[2] += ((this.changedTiles[1] - this.changedTiles[0]) - this.changedTiles[2])/(fps/3); //smoothing function
         if(this.changedTiles[2] < 0.75){this.filling = false;}
         this.changedTiles[0] = this.changedTiles[1];
 

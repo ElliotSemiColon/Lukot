@@ -107,15 +107,18 @@ function resizeCanvas(){
     board.tiles.forEach(tile =>{ tile.resize(canvas.width, canvas.height); });
 }
 
-let frameID = 0;
+let frameID = 0, lastTime = 0, fps = 0;
 
 function mainLoop(timestamp){
+
+    fps = 1000/(timestamp - lastTime);
+    lastTime = timestamp;
 
     ctx.fillStyle = "#666666";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
     board.bucket.update();
-    board.update(mx, my);
+    board.update(mx, my, fps);
     //if(board){board.update();}
 
     //board.tiles.forEach(tile => { tile.draw(ctx); });
