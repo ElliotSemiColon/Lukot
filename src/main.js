@@ -25,14 +25,14 @@ window.addEventListener('keydown', event => {
         case 79: // 'o' key (output board)
             board.get();
             return;
-        case 89: // 'p' key
-            board.skip(1);
+        case 89: // 'y' key
+            if(!showControls){ board.skip(1); }
             return;
-        case 84: // 'i' key
-            board.skip(-1);
+        case 84: // 't' key
+            if(!showControls){ board.skip(-1); }
             return;
         case 82: //'r' key (reset)
-            if(!(board.filling || showControls)){ board.reset(); }
+            if(!showControls){ board.reset(); }
             return;
         case 32:
             showControls = false;
@@ -78,7 +78,9 @@ function release(event){ //for editor
 
 }
 
+board.generate();
 resizeCanvas();
+board.load(0); //load level 1
 
 board.bucket.fills = board.storage.fills[0];
 
@@ -88,8 +90,6 @@ function resizeCanvas(){
     board.resize(canvas.width, canvas.height);
     board.tiles.forEach(tile =>{ tile.resize(canvas.width, canvas.height); });
 }
-
-board.generate();
 
 function game(){
 
@@ -113,7 +113,7 @@ function controls(){
     ctx.fillStyle = "#222222";
     ctx.fillText("Change levels: T/Y", canvas.width/2 - size * 12.1, canvas.height/2 - size * 3);
     ctx.fillText("Select fill colour: middle-mouse over desired colour", canvas.width/2 - size * 12.1, canvas.height/2 - size * 1.5);
-    ctx.fillText("Fill an area: left click/right click", canvas.width/2 - size * 12.1, canvas.height/2);
+    ctx.fillText("Fill an area: left click", canvas.width/2 - size * 12.1, canvas.height/2);
     ctx.fillText("Retry level: R (tip: you can use R to reset complete levels)", canvas.width/2 - size * 12.1, canvas.height/2 + size * 1.5);
     ctx.fillText("Start game: spacebar", canvas.width/2 - size * 12.1, canvas.height/2 + size * 3);
 
