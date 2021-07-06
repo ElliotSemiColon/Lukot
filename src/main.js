@@ -23,7 +23,7 @@ window.addEventListener('keydown', event => {
             board.bucket.mode = 0;
             return;
         case 79: // 'o' key (output board)
-            board.get();
+            board.get(true);
             return;
         case 89: // 'y' key
             if(!showControls){ board.skip(1); }

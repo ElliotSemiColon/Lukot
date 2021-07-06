@@ -120,9 +120,10 @@ export default class Board extends Resizeable{
         
         this.bucket.filling = this.filling;
 
-        this.changedTiles[2] += ((this.changedTiles[1] - this.changedTiles[0]) - this.changedTiles[2])/(fps/3); //smoothing function
-        if(this.changedTiles[2] < 0.75){this.filling = false;}
+        this.changedTiles[2] += ((this.changedTiles[1] - this.changedTiles[0]) - this.changedTiles[2])/(fps/4); //smoothing function
+        if(this.changedTiles[2] < 0.25){this.filling = false;}
         this.changedTiles[0] = this.changedTiles[1];
+        //console.log(this.changedTiles[2]);
 
     }
 
@@ -149,11 +150,11 @@ export default class Board extends Resizeable{
 
     progressionCheck(){ //can i progress??
 
-        if(this.isComplete() && this.level + 1 < this.storage.levels.length && this.bucket.mode == 0){ 
+        if(this.isComplete() && this.bucket.mode == 0){ 
             this.changingLevel = true;
             this.storage.completed(this.level);
             this.load(this.level);
-            setTimeout(() => { this.progress(1, true); }, 1000); 
+            if(this.level + 1 < this.storage.levels.length){ setTimeout(() => { this.progress(1, true); }, 1000); }else{ this.changingLevel = false; }
         }
 
     }
@@ -243,7 +244,7 @@ export default class Board extends Resizeable{
         }
     }
 
-    get(){ //outputs board state with RLE for level creation in editor mode
+    get(out){ //outputs board state with RLE for level creation in editor mode
 
         let IDs = [], initial = this.tiles[0].ID, tally = 0;
 
@@ -262,7 +263,7 @@ export default class Board extends Resizeable{
 
         IDs.push(`${initial}x${tally}`);
 
-        console.log(IDs);
+        if(out){ console.log(IDs); }
 
         return IDs;
 
