@@ -111,7 +111,7 @@ function controls(){
     ctx.fillStyle = "#ffffff";
     ctx.fillText("Welcome to Lukot; clear the patterns to clear levels!", canvas.width/2 - size * 12.1, canvas.height/2 - size * 4.5);
     ctx.fillStyle = "#222222";
-    ctx.fillText("Change levels: T/Y", canvas.width/2 - size * 12.1, canvas.height/2 - size * 3);
+    ctx.fillText("Change levels: T/Y (levels save so you can revisit them)", canvas.width/2 - size * 12.1, canvas.height/2 - size * 3);
     ctx.fillText("Select fill colour: middle-mouse over desired colour", canvas.width/2 - size * 12.1, canvas.height/2 - size * 1.5);
     ctx.fillText("Fill an area: left click", canvas.width/2 - size * 12.1, canvas.height/2);
     ctx.fillText("Retry level: R (tip: you can use R to reset complete levels)", canvas.width/2 - size * 12.1, canvas.height/2 + size * 1.5);
